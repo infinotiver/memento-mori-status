@@ -13,6 +13,13 @@
 
 ---
 
+## Screenshots
+![Day Progress](demo/image.png)  
+*Example of daily progress visualization.*
+
+![Full Stats Popup](./demo/image2.png)  
+*Detailed stats popup showing life progress.*
+
 ## Usage
 
 1. Install the extension.
