@@ -1,0 +1,60 @@
+{
+  "name": "memento-mori-status",
+  "displayName": "memento-mori-status",
+  "description": "Displays day/year/life progress in the status bar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/infinotiver/memento-mori-status.git"
+  },
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "mementoMori.showStats",
+        "title": "Memento Mori: Show Full Stats"
+      },
+      {
+        "command": "mementoMori.setBirthDate",
+        "title": "Memento Mori: Set Birth Date"
+      }
+    ],
+    "configuration": {
+      "title": "Memento Mori",
+      "properties": {
+        "mementoMori.birthDate": {
+          "type": "string",
+          "default": "1990-01-01",
+          "description": "Your birth date (YYYY-MM-DD)"
+        },
+        "mementoMori.lifeExpectancy": {
+          "type": "number",
+          "default": 80,
+          "description": "Expected lifespan in years"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "eslint": "^9.25.1",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
