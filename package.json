@@ -2,6 +2,7 @@
   "name": "memento-mori-status",
   "displayName": "memento-mori-status",
   "description": "Displays day/year/life progress in the status bar",
+  "publisher": "infinotiver",
   "repository": {
     "type": "git",
     "url": "https://github.com/infinotiver/memento-mori-status.git"
