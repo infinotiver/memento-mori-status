@@ -1,4 +1,4 @@
-![Banner](banner.png)
+![Banner](banner-.png)
 # Memento Mori Status
 
 **A simple VS Code extension that shows how much of your day, month, year, and expected life has passed.**
@@ -7,7 +7,7 @@
 
 ## Features
 
-- 🕒 **Day, Month, Year, Life progress** measured as percentages (e.g., `Day: 45%`)
+- 🕒 **Day, Month, Year, Life progress** measured as percentages (e.g., `Day: 45%`) (configurable)
 - 📊 **Graphical bars** in tooltips for a quick visual glance
 - 🔍 **Popup command** (`Show Full Stats`) displaying days/weeks lived and remaining
 - ⚙️ **Interactive configuration**: command to update your birth date in settings
@@ -42,8 +42,10 @@ Update settings in VS Code (`settings.json`):
 ```json
 "mementoMori.birthDate": "2000-05-15",
 "mementoMori.lifeExpectancy": 82
+"mementoMori.displayFormat": "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%"
 ```
 
 **Defaults:**  
 - `birthDate`: `1990-01-01`  
 - `lifeExpectancy`: `80 years`
+- `displayFormat` : `Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%`
