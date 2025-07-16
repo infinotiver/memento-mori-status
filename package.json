@@ -42,6 +42,11 @@
           "type": "number",
           "default": 80,
           "description": "Expected lifespan in years"
+        },
+        "mementoMori.displayFormat": {
+          "type": "string",
+          "default": "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%",
+          "description": "Defines the template for displaying progress in the status bar. Supports variables: '{dayProgress}', '{monthProgress}', '{yearProgress}', and '{lifeProgress}'"
         }
       }
     }

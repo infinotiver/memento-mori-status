@@ -1,13 +1,14 @@
 const vscode = require('vscode');
 
 function activate(context) {
-	let statusData = {}
+	let statusData = {};
 	const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
 	context.subscriptions.push(statusBarItem);
 
 	const config = vscode.workspace.getConfiguration('mementoMori');
 	let birthDateStr = config.get('birthDate') || '1990-01-01';
 	let lifeExpectancy = config.get('lifeExpectancy') || 80;
+	let displayFormat = config.get('displayFormat') || "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%";
 
 	function percent(start, end, now) {
 		return Math.round(((now - start) / (end - start) * 100)).toString();
@@ -21,7 +22,8 @@ function activate(context) {
 		const dayProgress = percent(startOfDay, endOfDay, now);
 
 		const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-		const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+		const endOfMonth = new Date(now.getFullYear(), now.getMonth() === 11 ? 0 : now.getMonth() + 1, 1);
+		if (now.getMonth() === 11) endOfMonth.setFullYear(now.getFullYear() + 1);
 		const monthProgress = percent(startOfMonth, endOfMonth, now);
 
 		const startOfYear = new Date(now.getFullYear(), 0, 1);
@@ -30,24 +32,29 @@ function activate(context) {
 
 		const birthDate = new Date(birthDateStr);
 		const expectedDeath = new Date(birthDate.getFullYear() + lifeExpectancy, birthDate.getMonth(), birthDate.getDate());
-		const lifeProgress =percent(birthDate, expectedDeath, now);
-
-		statusBarItem.text = `Day: ${dayProgress}% Month: ${monthProgress} Year: ${yearProgress}% Life: ${lifeProgress}%`;
+		const lifeProgress = percent(birthDate, expectedDeath, now);
+		statusBarItem.text = displayFormat
+			.replace('{dayProgress}', dayProgress)
+			.replace('{monthProgress}', monthProgress)
+			.replace('{yearProgress}', yearProgress)
+			.replace('{lifeProgress}', lifeProgress);
+		console.log("Updating statusbar text");
 
 		const dayProgressBar = `${'█'.repeat(parseInt(dayProgress, 10) / 10)}${'░'.repeat(10 - parseInt(dayProgress, 10) / 10)}`;
+		const monthProgressBar = `${'█'.repeat(parseInt(monthProgress, 10) / 10)}${'░'.repeat(10 - parseInt(monthProgress, 10) / 10)}`;
 		const yearProgressBar = `${'█'.repeat(parseInt(yearProgress, 10) / 10)}${'░'.repeat(10 - parseInt(yearProgress, 10) / 10)}`;
 		const lifeProgressBar = `${'█'.repeat(parseInt(lifeProgress, 10) / 10)}${'░'.repeat(10 - parseInt(lifeProgress, 10) / 10)}`;
 
 
-		statusBarItem.tooltip = 
+		statusBarItem.tooltip =
 			`${dayProgressBar} Day: ${dayProgress}%\n` +
+			`${monthProgressBar} Month: ${monthProgress}%\n` +
 			`${yearProgressBar} Year: ${yearProgress}%\n` +
 			`${lifeProgressBar} Life: ${lifeProgress}%\n` +
 			`DOB: ${birthDateStr}`;
 		statusBarItem.show();
-
 		// Save for commands
-		statusData = { dayProgress, yearProgress, lifeProgress, birthDateStr, expectedDeath };
+		statusData = { dayProgress, monthProgress, yearProgress, lifeProgress, birthDateStr, expectedDeath };
 	}
 
 	updateStatus();
@@ -56,16 +63,20 @@ function activate(context) {
 
 	// Command: Show Full Stats
 	const showStats = vscode.commands.registerCommand('mementoMori.showStats', () => {
-		const { dayProgress, yearProgress, lifeProgress, birthDateStr, expectedDeath } = statusData || {};
+		const { dayProgress, monthProgress, yearProgress, lifeProgress, birthDateStr, expectedDeath } = statusData || {};
 		const now = new Date();
-		const daysLived = Math.floor((now - new Date(birthDateStr)) / (1000 * 60 * 60 * 24));
-		const daysRemaining = Math.floor((expectedDeath - now) / (1000 * 60 * 60 * 24));
-		const weeksLived = Math.floor(daysLived / 7);
-		const weeksRemaining = Math.floor(daysRemaining / 7);
+		const birthDate = new Date(birthDateStr);
+		if (isNaN(birthDate.getTime())) {
+			vscode.window.showErrorMessage(`Invalid birth date: ${birthDateStr}`);
+			return;
+		}
+		const daysLived = Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24));
+		const daysRemaining = Math.floor((expectedDeath.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
 		vscode.window.showInformationMessage(
 			`Date of Birth: ${birthDateStr}.\n` +
 			`Day Progress: ${dayProgress}%.\n` +
+			`Month Progress: ${monthProgress}%.\n` +
 			`Year Progress: ${yearProgress}%.\n` +
 			`Life Progress: ${lifeProgress}%.\n` +
 			`Days Lived: ${daysLived} days.\n` +
@@ -90,7 +101,7 @@ function activate(context) {
 	context.subscriptions.push(setBirthDate);
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
 	activate,
