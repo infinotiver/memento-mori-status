@@ -1,4 +1,4 @@
-![Banner](banner-.png)
+![Banner](banner.png)
 # Memento Mori Status
 
 **A simple VS Code extension that shows how much of your day, month, year, and expected life has passed.**
