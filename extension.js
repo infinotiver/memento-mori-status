@@ -41,7 +41,7 @@ function activate(context) {
 		console.log("Updating statusbar text");
 
 		const createProgressBar = (progress) => {
-			const value = parseInt(progress, 10) / 10;
+			const value = Math.min(10, Math.max(0, Math.round(parseInt(progress, 10) / 10)));
 			return `${'█'.repeat(value)}${'░'.repeat(10 - value)}`;
 		};
 
