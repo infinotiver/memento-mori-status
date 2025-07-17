@@ -18,8 +18,8 @@
 ![Day Progress](demo/image.png)  
 *Example of daily progress visualization.*
 
-![Full Stats Popup](./demo/image2.png)  
-*Detailed stats popup showing life progress.*
+![Settings for extension](./demo/image2.png)  
+*Settings page*
 
 ## Usage
 
