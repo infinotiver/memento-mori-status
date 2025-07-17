@@ -40,10 +40,15 @@ function activate(context) {
 			.replace('{lifeProgress}', lifeProgress);
 		console.log("Updating statusbar text");
 
-		const dayProgressBar = `${'█'.repeat(parseInt(dayProgress, 10) / 10)}${'░'.repeat(10 - parseInt(dayProgress, 10) / 10)}`;
-		const monthProgressBar = `${'█'.repeat(parseInt(monthProgress, 10) / 10)}${'░'.repeat(10 - parseInt(monthProgress, 10) / 10)}`;
-		const yearProgressBar = `${'█'.repeat(parseInt(yearProgress, 10) / 10)}${'░'.repeat(10 - parseInt(yearProgress, 10) / 10)}`;
-		const lifeProgressBar = `${'█'.repeat(parseInt(lifeProgress, 10) / 10)}${'░'.repeat(10 - parseInt(lifeProgress, 10) / 10)}`;
+		const createProgressBar = (progress) => {
+			const value = parseInt(progress, 10) / 10;
+			return `${'█'.repeat(value)}${'░'.repeat(10 - value)}`;
+		};
+
+		const dayProgressBar = createProgressBar(dayProgress);
+		const monthProgressBar = createProgressBar(monthProgress);
+		const yearProgressBar = createProgressBar(yearProgress);
+		const lifeProgressBar = createProgressBar(lifeProgress);
 
 
 		statusBarItem.tooltip =
