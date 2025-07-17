@@ -4,6 +4,13 @@ All notable changes to the "memento-mori-status" extension will be documented in
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+
+### Added
+- Simplify progress bar creation by defining a function
+
+### Changed
+- Demo images updated for v0.1.2
 ## 0.1.2 - 2025-07-16
 
 ### Changed
