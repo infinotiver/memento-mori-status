@@ -10,15 +10,31 @@ function activate(context) {
 	let lifeExpectancy = config.get('lifeExpectancy') || 80;
 	let displayFormat = config.get('displayFormat') || "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%";
 
+	// Validate configuration values
+	function validateConfig() {
+		if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDateStr)) {
+			vscode.window.showErrorMessage(`Invalid birth date format: ${birthDateStr}. Resetting to default.`);
+			birthDateStr = '1990-01-01';
+		}
+		if (isNaN(lifeExpectancy) || lifeExpectancy <= 0) {
+			vscode.window.showErrorMessage(`Invalid life expectancy: ${lifeExpectancy}. Resetting to default.`);
+			lifeExpectancy = 80;
+		}
+		if (typeof displayFormat !== 'string' || !displayFormat.includes('{dayProgress}')) {
+			vscode.window.showErrorMessage(`Invalid display format. Resetting to default.`);
+			displayFormat = "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%";
+		}
+	}
+	validateConfig();
+
 	function percent(start, end, now) {
 		return Math.round(((now - start) / (end - start) * 100)).toString();
 	}
 
 	function updateStatus() {
 		const now = new Date();
-
 		const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-		const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+		const endOfDay = new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
 		const dayProgress = percent(startOfDay, endOfDay, now);
 
 		const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -49,7 +65,6 @@ function activate(context) {
 		const monthProgressBar = createProgressBar(monthProgress);
 		const yearProgressBar = createProgressBar(yearProgress);
 		const lifeProgressBar = createProgressBar(lifeProgress);
-
 
 		statusBarItem.tooltip =
 			`${dayProgressBar} Day: ${dayProgress}%\n` +
@@ -104,6 +119,19 @@ function activate(context) {
 		}
 	});
 	context.subscriptions.push(setBirthDate);
+
+	// Command: Reset Configuration
+	const resetConfig = vscode.commands.registerCommand('mementoMori.resetConfig', async () => {
+		await vscode.workspace.getConfiguration('mementoMori').update('birthDate', '1990-01-01', vscode.ConfigurationTarget.Global);
+		await vscode.workspace.getConfiguration('mementoMori').update('lifeExpectancy', 80, vscode.ConfigurationTarget.Global);
+		await vscode.workspace.getConfiguration('mementoMori').update('displayFormat', "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%", vscode.ConfigurationTarget.Global);
+		birthDateStr = '1990-01-01';
+		lifeExpectancy = 80;
+		displayFormat = "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%";
+		updateStatus();
+		vscode.window.showInformationMessage('Configuration reset to defaults.');
+	});
+	context.subscriptions.push(resetConfig);
 }
 
 function deactivate() { }

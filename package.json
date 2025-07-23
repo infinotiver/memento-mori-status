@@ -28,6 +28,10 @@
       {
         "command": "mementoMori.setBirthDate",
         "title": "Memento Mori: Set Birth Date"
+      },
+      {
+        "command": "mementoMori.resetConfig",
+        "title": "Memento Mori: Reset Configuration"
       }
     ],
     "configuration": {
