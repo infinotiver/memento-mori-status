@@ -7,7 +7,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 
 
-## 0.1.3 - 2025-07-23
+## 0.2.0 - 2025-07-23
 
 ### Added
 
