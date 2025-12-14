@@ -6,6 +6,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## 0.3.0 - 2025-12-14
+
+### Added
+- Token-based status format with descriptive camelCase tokens (day/month/year/life progress & remaining, age, days lived/left, days until birthday) plus legacy placeholders for compatibility.
+
+### Changed
+- Default status bar format switched to tokenized layout.
+- Status updates now refresh every 5 minutes instead of every minute.
 
 ## 0.2.0 - 2025-07-23
 

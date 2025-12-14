@@ -55,7 +55,9 @@ You can customize the extension using the following settings:
 
 - `mementoMori.birthDate`: Your birth date in `YYYY-MM-DD` format. Default: `1990-01-01`.
 - `mementoMori.lifeExpectancy`: Your expected lifespan in years. Default: `80`.
-- `mementoMori.displayFormat`: Template for the status bar text. Default: `Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%`.
+- `mementoMori.displayFormat`: Template for the status bar text. Default: `Day %dayProgress% · Year %yearProgress% · Life %lifeProgress%`.
+    - Tokens: `%dayProgress%`, `%dayRemaining%`, `%monthProgress%`, `%monthRemaining%`, `%yearProgress%`, `%yearRemaining%`, `%lifeProgress%`, `%lifeRemaining%`, `%ageYears%`, `%ageYearsMonthsDays%`, `%daysLived%`, `%daysLeftLife%`, `%daysUntilBirthday%`.
+    - Legacy placeholders still work: `{dayProgress}`, `{monthProgress}`, `{yearProgress}`, `{lifeProgress}`.
 
 ## Screenshots
 
