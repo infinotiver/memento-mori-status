@@ -7,6 +7,7 @@
 <p align="center">A simple VS Code extension that shows how much of your day, month, year, and expected life has passed.</p>
 
 <p align="center">
+<a href="https://marketplace.visualstudio.com/items?itemName=infinotiver.memento-mori-status">Get Extension</a> • 
 <a href="#features">Features</a> • 
 <a href="#usage">Usage</a> • 
 <a href="#configuration">Configuration</a> • 
