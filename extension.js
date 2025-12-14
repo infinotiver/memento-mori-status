@@ -8,7 +8,7 @@ function activate(context) {
 	const config = vscode.workspace.getConfiguration('mementoMori');
 	let birthDateStr = config.get('birthDate') || '1990-01-01';
 	let lifeExpectancy = config.get('lifeExpectancy') || 80;
-	let displayFormat = config.get('displayFormat') || "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%";
+	let displayFormat = config.get('displayFormat') || "Day %dayProgress% · Year %yearProgress% · Life %lifeProgress%";
 
 	// Validate configuration values
 	function validateConfig() {
@@ -20,15 +20,42 @@ function activate(context) {
 			vscode.window.showErrorMessage(`Invalid life expectancy: ${lifeExpectancy}. Resetting to default.`);
 			lifeExpectancy = 80;
 		}
-		if (typeof displayFormat !== 'string' || !displayFormat.includes('{dayProgress}')) {
+		if (typeof displayFormat !== 'string') {
 			vscode.window.showErrorMessage(`Invalid display format. Resetting to default.`);
-			displayFormat = "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%";
+			displayFormat = "Day %dayProgress% · Year %yearProgress% · Life %lifeProgress%";
 		}
 	}
 	validateConfig();
 
 	function percent(start, end, now) {
 		return Math.round(((now - start) / (end - start) * 100)).toString();
+	}
+
+	function formatWithTokens(template, tokens) {
+		let result = template;
+		for (const [token, value] of Object.entries(tokens)) {
+			result = result.split(token).join(value);
+		}
+		return result;
+	}
+
+	function diffYmd(from, to) {
+		let years = to.getFullYear() - from.getFullYear();
+		let months = to.getMonth() - from.getMonth();
+		let days = to.getDate() - from.getDate();
+
+		if (days < 0) {
+			months -= 1;
+			const previousMonth = new Date(to.getFullYear(), to.getMonth(), 0);
+			days += previousMonth.getDate();
+		}
+
+		if (months < 0) {
+			years -= 1;
+			months += 12;
+		}
+
+		return { years, months, days };
 	}
 
 	function updateStatus() {
@@ -47,13 +74,43 @@ function activate(context) {
 		const yearProgress = percent(startOfYear, endOfYear, now);
 
 		const birthDate = new Date(birthDateStr);
+		if (isNaN(birthDate.getTime())) {
+			statusBarItem.text = 'Memento Mori: invalid birth date';
+			statusBarItem.show();
+			return;
+		}
 		const expectedDeath = new Date(birthDate.getFullYear() + lifeExpectancy, birthDate.getMonth(), birthDate.getDate());
 		const lifeProgress = percent(birthDate, expectedDeath, now);
-		statusBarItem.text = displayFormat
-			.replace('{dayProgress}', dayProgress)
-			.replace('{monthProgress}', monthProgress)
-			.replace('{yearProgress}', yearProgress)
-			.replace('{lifeProgress}', lifeProgress);
+		const ageParts = diffYmd(birthDate, now);
+		const daysLeft = Math.max(0, Math.floor((expectedDeath.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+		const daysLived = Math.max(0, Math.floor((now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24)));
+		const nextBirthday = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+		if (nextBirthday < now) nextBirthday.setFullYear(now.getFullYear() + 1);
+		const daysToNextBirthday = Math.max(0, Math.floor((nextBirthday.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+
+		const tokens = {
+			// Descriptive camelCase tokens
+			"%dayProgress%": `${dayProgress}%`,
+			"%dayRemaining%": `${Math.max(0, 100 - parseInt(dayProgress, 10))}%`,
+			"%monthProgress%": `${monthProgress}%`,
+			"%monthRemaining%": `${Math.max(0, 100 - parseInt(monthProgress, 10))}%`,
+			"%yearProgress%": `${yearProgress}%`,
+			"%yearRemaining%": `${Math.max(0, 100 - parseInt(yearProgress, 10))}%`,
+			"%lifeProgress%": `${lifeProgress}%`,
+			"%lifeRemaining%": `${Math.max(0, 100 - parseInt(lifeProgress, 10))}%`,
+			"%ageYears%": `${ageParts.years}y`,
+			"%ageYearsMonthsDays%": `${ageParts.years}y ${ageParts.months}m ${ageParts.days}d`,
+			"%daysLived%": `${daysLived}`,
+			"%daysLeftLife%": `${daysLeft}`,
+			"%daysUntilBirthday%": `${daysToNextBirthday}`,
+			// Legacy placeholders for backward compatibility
+			"{dayProgress}": `${dayProgress}`,
+			"{monthProgress}": `${monthProgress}`,
+			"{yearProgress}": `${yearProgress}`,
+			"{lifeProgress}": `${lifeProgress}`
+		};
+
+		statusBarItem.text = formatWithTokens(displayFormat, tokens);
 		console.log("Updating statusbar text");
 
 		const createProgressBar = (progress) => {
@@ -124,10 +181,10 @@ function activate(context) {
 	const resetConfig = vscode.commands.registerCommand('mementoMori.resetConfig', async () => {
 		await vscode.workspace.getConfiguration('mementoMori').update('birthDate', '1990-01-01', vscode.ConfigurationTarget.Global);
 		await vscode.workspace.getConfiguration('mementoMori').update('lifeExpectancy', 80, vscode.ConfigurationTarget.Global);
-		await vscode.workspace.getConfiguration('mementoMori').update('displayFormat', "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%", vscode.ConfigurationTarget.Global);
+		await vscode.workspace.getConfiguration('mementoMori').update('displayFormat', "Day %dayProgress% · Year %yearProgress% · Life %lifeProgress%", vscode.ConfigurationTarget.Global);
 		birthDateStr = '1990-01-01';
 		lifeExpectancy = 80;
-		displayFormat = "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%";
+		displayFormat = "Day %dayProgress% · Year %yearProgress% · Life %lifeProgress%";
 		updateStatus();
 		vscode.window.showInformationMessage('Configuration reset to defaults.');
 	});

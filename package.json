@@ -49,8 +49,8 @@
         },
         "mementoMori.displayFormat": {
           "type": "string",
-          "default": "Day: {dayProgress}% Month: {monthProgress}% Year: {yearProgress}% Life: {lifeProgress}%",
-          "description": "Defines the template for displaying progress in the status bar. Supports variables: '{dayProgress}', '{monthProgress}', '{yearProgress}', and '{lifeProgress}'"
+          "default": "Day %dayProgress% · Year %yearProgress% · Life %lifeProgress%",
+          "description": "Tokens: %dayProgress%, %dayRemaining%, %monthProgress%, %monthRemaining%, %yearProgress%, %yearRemaining%, %lifeProgress%, %lifeRemaining%, %ageYears%, %ageYearsMonthsDays%, %daysLived%, %daysLeftLife%, %daysUntilBirthday%; legacy placeholders also supported: {dayProgress}, {monthProgress}, {yearProgress}, {lifeProgress}"
         }
       }
     }
