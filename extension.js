@@ -135,7 +135,7 @@ function activate(context) {
 	}
 
 	updateStatus();
-	const interval = setInterval(updateStatus, 60 * 1000);
+	const interval = setInterval(updateStatus, 5 *60 * 1000);
 	context.subscriptions.push({ dispose: () => clearInterval(interval) });
 
 	// Command: Show Full Stats
